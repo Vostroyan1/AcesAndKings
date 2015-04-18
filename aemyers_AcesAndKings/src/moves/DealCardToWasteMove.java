@@ -1,6 +1,6 @@
 //Adam Myers cs3733
 
-package aemyers;
+package moves;
 
 import ks.common.games.Solitaire;
 import ks.common.model.Card;
@@ -27,6 +27,7 @@ public class DealCardToWasteMove extends Move{
 		if (!valid(game)){ return false;}
 		
 		Card card = stock.get();
+		//System.out.println(card.getRank());
 		waste.add(card);
 		return true; //move successful
 	}

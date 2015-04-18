@@ -1,13 +1,15 @@
 //Adam Myers cs3733
 
-package aemyers;
+package controllers;
 
+import moves.DealCardToWasteMove;
+import aemyers.AcesAndKings;
 import ks.common.controller.SolitaireReleasedAdapter;
 import ks.common.model.Move;
 import ks.common.model.MultiDeck;
 import ks.common.model.Pile;
 
-public class AcesAndKingsController extends SolitaireReleasedAdapter{
+public class DeckController extends SolitaireReleasedAdapter{
 	
 	protected AcesAndKings theGame; //the game
 	
@@ -15,8 +17,8 @@ public class AcesAndKingsController extends SolitaireReleasedAdapter{
 	
 	protected MultiDeck stock; //stock pile(deck) of interest
 	
-	//AcesAndKingsController constructor
-	public AcesAndKingsController(AcesAndKings theGame, MultiDeck d, Pile waste){
+	//DeckController constructor
+	public DeckController(AcesAndKings theGame, MultiDeck d, Pile waste){
 		super(theGame);
 		
 		this.theGame = theGame;

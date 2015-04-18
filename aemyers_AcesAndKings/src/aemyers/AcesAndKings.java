@@ -2,15 +2,18 @@
 
 package aemyers;
 
+import moves.FoundationToKingFoundationMove;
+import moves.WasteToTableauMove;
+import controllers.*;
 import ks.common.controller.SolitaireMouseMotionAdapter;
 import ks.common.games.Solitaire;
 import ks.common.games.SolitaireUndoAdapter;
-import ks.common.model.BuildablePile;
+import ks.common.model.Card;
 import ks.common.model.Column;
 import ks.common.model.Deck;
+import ks.common.model.Move;
 import ks.common.model.MultiDeck;
 import ks.common.model.Pile;
-import ks.common.view.BuildablePileView;
 import ks.common.view.CardImages;
 import ks.common.view.ColumnView;
 import ks.common.view.DeckView;
@@ -25,14 +28,14 @@ public class AcesAndKings extends Solitaire{
 	Pile tableau[] = new Pile [5];
 	Pile acefoundation[] = new Pile [5];
 	Pile kingfoundation[] = new Pile [5];
-	Column reserve1, reserve2;
+	Column reserve[] = new Column [3];
 	//Views
 	IntegerView scoreview;
 	DeckView stockview;
 	PileView wasteview;
 	PileView acefoundationview[] = new PileView [5];
 	PileView kingfoundationview[] = new PileView [5];
-	ColumnView reserveview1, reserveview2;
+	ColumnView reserveview[] = new ColumnView [3];
 	PileView tableauview[] = new PileView [5];
 	
 	@Override
@@ -42,8 +45,7 @@ public class AcesAndKings extends Solitaire{
 
 	@Override
 	public boolean hasWon() {
-		// TODO Auto-generated method stub
-		return false;
+		return getScore().getValue() == 104;
 	}
 
 	@Override
@@ -52,6 +54,7 @@ public class AcesAndKings extends Solitaire{
 		initializeModel(getSeed());
 		//initialize the views
 		initializeView();
+		//initialize the controllers
 		initializeController();
 		
 		//prepare game by ...
@@ -59,9 +62,35 @@ public class AcesAndKings extends Solitaire{
 	}
 
 	private void initializeController() {
-		stockview.setMouseAdapter(new AcesAndKingsController(this, stock, waste));
+		stockview.setMouseAdapter(new DeckController(this, stock, waste));
 		stockview.setMouseMotionAdapter (new SolitaireMouseMotionAdapter(this));
 		stockview.setUndoAdapter(new SolitaireUndoAdapter(this));
+		
+		wasteview.setMouseAdapter(new WasteController(this, wasteview));
+		wasteview.setMouseMotionAdapter (new SolitaireMouseMotionAdapter(this));
+		wasteview.setUndoAdapter(new SolitaireUndoAdapter(this));
+		
+		for (int i = 1; i <=4; i++){
+			acefoundationview[i].setMouseAdapter(new AceFoundationController(this, acefoundationview[i]));
+			acefoundationview[i].setMouseMotionAdapter (new SolitaireMouseMotionAdapter(this));
+			acefoundationview[i].setUndoAdapter(new SolitaireUndoAdapter(this));
+		}
+		for (int i = 1; i <=4; i++){
+			kingfoundationview[i].setMouseAdapter(new KingFoundationController(this, kingfoundationview[i]));
+			kingfoundationview[i].setMouseMotionAdapter (new SolitaireMouseMotionAdapter(this));
+			kingfoundationview[i].setUndoAdapter(new SolitaireUndoAdapter(this));
+		}
+		for (int i = 1; i <=4; i++){
+			tableauview[i].setMouseAdapter(new TableauController(this, tableauview[i]));
+			tableauview[i].setMouseMotionAdapter (new SolitaireMouseMotionAdapter(this));
+			tableauview[i].setUndoAdapter(new SolitaireUndoAdapter(this));
+		}
+		for (int i = 1; i <=2; i++){
+			reserveview[i].setMouseAdapter(new ReserveController(this, reserveview[i]));
+			reserveview[i].setMouseMotionAdapter (new SolitaireMouseMotionAdapter(this));
+			reserveview[i].setUndoAdapter(new SolitaireUndoAdapter(this));
+		}
+
 	}
 
 	private void initializeView() {
@@ -70,43 +99,53 @@ public class AcesAndKings extends Solitaire{
 		scoreview = new IntegerView (getScore());
 		scoreview.setFontSize(14);
 		scoreview.setBounds (20, 20, 150, 50);
+		scoreview.setName("ScoreView");
 		container.addWidget (scoreview);
 		
 		stockview = new DeckView(stock);
-		stockview.setBounds(20,100+scoreview.getHeight()+2*c.getHeight(),c.getWidth(),c.getHeight());
+		stockview.setBounds(10*(1+5) + c.getWidth()*(1+3),20,c.getWidth(),c.getHeight());
+		stockview.setName("StockView");
 		container.addWidget(stockview);
 
 		wasteview = new PileView (waste);
-		wasteview.setBounds (30+c.getWidth(),100+scoreview.getHeight()+2*c.getHeight(), c.getWidth(), c.getHeight());
+		wasteview.setBounds (10*(2+5) + c.getWidth()*(2+3),20, c.getWidth(), c.getHeight());
+		wasteview.setName("WasteView");
 		container.addWidget (wasteview);
 		
 		// create acefoundation PileViews, one after the other.
 		for (int pileNum = 1; pileNum <=4; pileNum++) {
 			acefoundationview[pileNum] = new PileView (acefoundation[pileNum]);
-			acefoundationview[pileNum].setBounds (20*pileNum + c.getWidth()*(pileNum-1), 80+scoreview.getHeight()+c.getHeight(), c.getWidth(), c.getHeight());
+			acefoundationview[pileNum].setBounds (10*(pileNum+5) + c.getWidth()*(pileNum+3), 140+scoreview.getHeight(), c.getWidth(), c.getHeight());
+			acefoundationview[pileNum].setName("AceFoundationView" + pileNum);
 			container.addWidget (acefoundationview[pileNum]);
 		}
 		
 		// create kingfoundation PileViews, one after the other.
 		for (int pileNum = 1; pileNum <=4; pileNum++) {
 			kingfoundationview[pileNum] = new PileView (kingfoundation[pileNum]);
-			kingfoundationview[pileNum].setBounds (20*(pileNum+5) + c.getWidth()*(pileNum+3), 80+scoreview.getHeight()+c.getHeight(), c.getWidth(), c.getHeight());
+			kingfoundationview[pileNum].setBounds (10*(pileNum+5) + c.getWidth()*(pileNum+3), 180+scoreview.getHeight()+c.getHeight(), c.getWidth(), c.getHeight());
+			kingfoundationview[pileNum].setName("KingFoundationView" + pileNum);
 			container.addWidget (kingfoundationview[pileNum]);
 		}
 				
-		// create Tableau PileViews, one after the other.
+		// create tableau PileViews, one after the other.
 		for (int pileNum = 1; pileNum <=4; pileNum++) {
 			tableauview[pileNum] = new PileView (tableau[pileNum]);
-			tableauview[pileNum].setBounds (20*(pileNum+5) + c.getWidth()*(pileNum+3), 100+scoreview.getHeight()+2*c.getHeight(), c.getWidth(), c.getHeight());
+			tableauview[pileNum].setBounds (10*(pileNum+5) + c.getWidth()*(pileNum+3), 200+scoreview.getHeight()+2*c.getHeight(), c.getWidth(), c.getHeight());
+			tableauview[pileNum].setName("TableauView" + pileNum);
 			container.addWidget (tableauview[pileNum]);
 		}
-
-		reserveview1 = new ColumnView(reserve1);
-		reserveview1.setBounds(20,40+scoreview.getHeight(),c.getWidth(),c.getHeight());
-		container.addWidget(reserveview1);
-		reserveview2 = new ColumnView(reserve2);
-		reserveview2.setBounds(80+reserveview1.getWidth(),40+scoreview.getHeight(),c.getWidth(),c.getHeight());
-		container.addWidget(reserveview2);
+		
+		// create reserve ColumnViews, one after the other.
+		for (int pileNum = 1; pileNum <=2; pileNum++) {
+			reserveview[pileNum] = new ColumnView (reserve[pileNum]);
+			if (pileNum ==1)
+				reserveview[pileNum].setBounds(20,40+scoreview.getHeight(),c.getWidth(),c.getHeight()*4);
+			if (pileNum ==2)
+				reserveview[pileNum].setBounds(80+reserveview[pileNum-1].getWidth(),40+scoreview.getHeight(),c.getWidth(),c.getHeight()*4);
+			reserveview[pileNum].setName("ReserveView" + pileNum);
+			container.addWidget (reserveview[pileNum]);
+		}
 
 	}
 
@@ -138,13 +177,28 @@ public class AcesAndKings extends Solitaire{
 			model.addElement (kingfoundation[i]);
 		}
 		
-		reserve1 = new Column("reserve1");
-		model.addElement(reserve1);
-		reserve2 = new Column("reserve2");
-		model.addElement(reserve2);
+		// develop reserve columns
+		for (int i = 1; i<=2; i++) {
+			reserve[i] = new Column ("reserve" + i);
+			model.addElement (reserve[i]);
+		}
 		
 		updateScore(0);
 		updateNumberCardsLeft(104);
+		
+		for(int i = 1; i<=4;i++){ //give each tableau pile a card
+			Card c = stock.get();
+			tableau[i].add(c);
+		}
+		
+		for(int i = 1; i<=2;i++){ //give each reserve pile a card
+			for(int f=1; f<=16;f++){
+				Card c = stock.get();
+				reserve[i].add(c);
+			}	
+		}
+		
+		
 	}
 	
 	public static void main(String []args){
