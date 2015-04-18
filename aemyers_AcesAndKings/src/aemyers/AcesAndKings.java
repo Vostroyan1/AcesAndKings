@@ -71,12 +71,12 @@ public class AcesAndKings extends Solitaire{
 		wasteview.setUndoAdapter(new SolitaireUndoAdapter(this));
 		
 		for (int i = 1; i <=4; i++){
-			acefoundationview[i].setMouseAdapter(new AceFoundationController(this, acefoundationview[i]));
+			acefoundationview[i].setMouseAdapter(new AceFoundationController(this, acefoundationview[i], stock, waste));
 			acefoundationview[i].setMouseMotionAdapter (new SolitaireMouseMotionAdapter(this));
 			acefoundationview[i].setUndoAdapter(new SolitaireUndoAdapter(this));
 		}
 		for (int i = 1; i <=4; i++){
-			kingfoundationview[i].setMouseAdapter(new KingFoundationController(this, kingfoundationview[i]));
+			kingfoundationview[i].setMouseAdapter(new KingFoundationController(this, kingfoundationview[i], stock, waste));
 			kingfoundationview[i].setMouseMotionAdapter (new SolitaireMouseMotionAdapter(this));
 			kingfoundationview[i].setUndoAdapter(new SolitaireUndoAdapter(this));
 		}

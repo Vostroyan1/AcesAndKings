@@ -53,6 +53,9 @@ public class WasteToTableauMove extends Move{
 	}
 	
 	public boolean valid(Solitaire game) {
-		return !waste.empty() && !stock.empty() && tableau.empty();
+		if (!stock.empty() && tableau.empty()){return true;}
+		if (!waste.empty() && tableau.empty()){return true;}
+		return false;
+	
 	}
 }

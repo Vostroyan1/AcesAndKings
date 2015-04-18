@@ -8,10 +8,12 @@ import moves.FoundationToKingFoundationMove;
 import moves.ReserveToKingFoundationMove;
 import moves.TableauToKingFoundationMove;
 import moves.WasteToKingFoundationMove;
+import moves.WasteToTableauMove;
 import aemyers.AcesAndKings;
 import ks.common.model.Card;
 import ks.common.model.Column;
 import ks.common.model.Move;
+import ks.common.model.MultiDeck;
 import ks.common.model.Pile;
 import ks.common.view.CardView;
 import ks.common.view.Container;
@@ -21,12 +23,16 @@ import ks.common.view.Widget;
 public class KingFoundationController extends MouseAdapter {
 
 	protected AcesAndKings theGame;
+	protected MultiDeck stock;
+	protected Pile waste;
 	
 	protected PileView src;
 	
-	public KingFoundationController(AcesAndKings theGame, PileView kingfoundation){
+	public KingFoundationController(AcesAndKings theGame, PileView kingfoundation, MultiDeck stock, Pile waste){
 		this.theGame = theGame;
 		this.src = kingfoundation;
+		this.stock = stock;
+		this.waste = waste;
 	}
 	
 	/**
@@ -99,6 +105,10 @@ public class KingFoundationController extends MouseAdapter {
 				Move move = new TableauToKingFoundationMove(tableau, theCard, kingfoundation);
 				if (move.doMove(theGame)) {
 					theGame.pushMove (move);     // Successful Move has been Move
+					Move moveDraw = new WasteToTableauMove(stock, waste, tableau);
+					if (moveDraw.doMove(theGame)) { //draw new tableau card for that tableau if possible
+						theGame.pushMove (moveDraw);     // Successful Move has been Move
+					}
 				} else {
 				fromWidget.returnWidget (draggingWidget);
 				}

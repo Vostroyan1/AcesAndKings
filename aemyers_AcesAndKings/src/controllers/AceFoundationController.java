@@ -11,10 +11,12 @@ import moves.TableauToAceFoundationMove;
 import moves.TableauToKingFoundationMove;
 import moves.WasteToAceFoundationMove;
 import moves.WasteToKingFoundationMove;
+import moves.WasteToTableauMove;
 import aemyers.AcesAndKings;
 import ks.common.model.Card;
 import ks.common.model.Column;
 import ks.common.model.Move;
+import ks.common.model.MultiDeck;
 import ks.common.model.Pile;
 import ks.common.view.CardView;
 import ks.common.view.Container;
@@ -24,12 +26,16 @@ import ks.common.view.Widget;
 public class AceFoundationController extends MouseAdapter {
 
 	protected AcesAndKings theGame;
+	protected MultiDeck stock;
+	protected Pile waste;
 	
 	protected PileView src;
 	
-	public AceFoundationController(AcesAndKings theGame, PileView acefoundation){
+	public AceFoundationController(AcesAndKings theGame, PileView acefoundation, MultiDeck stock, Pile waste){
 		this.theGame = theGame;
 		this.src = acefoundation;
+		this.stock = stock;
+		this.waste = waste;
 	}
 	
 	/**
@@ -51,7 +57,7 @@ public class AceFoundationController extends MouseAdapter {
 			return;
 		}
 
-		/** Recover the from BuildablePile OR waste Pile */
+		/** Recover the from BuildablePile OR  Pile */
 		Widget fromWidget = c.getDragSource();
 		if (fromWidget == null) {
 			System.err.println ("FoundationController::mouseReleased(): somehow no dragSource in container.");
@@ -104,6 +110,10 @@ public class AceFoundationController extends MouseAdapter {
 				Move move = new TableauToAceFoundationMove(tableau, theCard, acefoundation);
 				if (move.doMove(theGame)) {
 					theGame.pushMove (move);     // Successful Move has been Move
+					Move moveDraw = new WasteToTableauMove(stock, waste, tableau);
+					if (moveDraw.doMove(theGame)) { //draw new tableau card for that tableau if possible
+						theGame.pushMove (moveDraw);     // Successful Move has been Move
+					}
 				} else {
 				fromWidget.returnWidget (draggingWidget);
 				}
