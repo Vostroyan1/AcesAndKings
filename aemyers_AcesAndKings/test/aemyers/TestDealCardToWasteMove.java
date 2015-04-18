@@ -16,7 +16,7 @@ public class TestDealCardToWasteMove {
 	public void test() {
 		AcesAndKings ak = new AcesAndKings();
 		GameWindow gw = Main.generateWindow(ak, Deck.OrderBySuit);
-		
+		int startingCards = 68;//68 = cards left after dealing to reserve and tableau columns/piles (104-16*2-4)
 		Card topCard = ak.stock.peek();
 		DealCardToWasteMove deal = new DealCardToWasteMove(ak.stock, ak.waste);
 		
@@ -24,13 +24,14 @@ public class TestDealCardToWasteMove {
 		
 		deal.doMove(ak);
 		
-		assertEquals(103, ak.stock.count()); //assert deck has 1 less card
+		
+		assertEquals(67, ak.stock.count()); //assert deck has 1 less card
 		assertEquals(topCard, ak.waste.peek()); //assert top card of deck is now top card of waste
 	
 		
 		deal.undo(ak);
 		
-		assertEquals(104, ak.stock.count());
+		assertEquals(68, ak.stock.count());
 		
 	}
 
