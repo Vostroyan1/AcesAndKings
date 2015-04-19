@@ -140,9 +140,9 @@ public class AcesAndKings extends Solitaire{
 		for (int pileNum = 1; pileNum <=2; pileNum++) {
 			reserveview[pileNum] = new ColumnView (reserve[pileNum]);
 			if (pileNum ==1)
-				reserveview[pileNum].setBounds(20,40+scoreview.getHeight(),c.getWidth(),c.getHeight()*4);
+				reserveview[pileNum].setBounds(20,40+scoreview.getHeight(),c.getWidth(),c.getHeight()*4+50);
 			if (pileNum ==2)
-				reserveview[pileNum].setBounds(80+reserveview[pileNum-1].getWidth(),40+scoreview.getHeight(),c.getWidth(),c.getHeight()*4);
+				reserveview[pileNum].setBounds(80+reserveview[pileNum-1].getWidth(),40+scoreview.getHeight(),c.getWidth(),c.getHeight()*4+50);
 			reserveview[pileNum].setName("ReserveView" + pileNum);
 			container.addWidget (reserveview[pileNum]);
 		}
